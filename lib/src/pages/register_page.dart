@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:software_client/src/blocs/provider.dart';
+import 'package:software_client/src/models/client_model.dart';
+import 'package:software_client/src/providers/client_provider.dart';
+import 'package:software_client/src/providers/user_provider.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -6,96 +10,93 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  String _name = '';
-  String _lastName = '';
   String _birthday = '';
   bool _gender = true;
-  String _username = '';
-  String _email = '';
-  String _password = '';
+
+  ClientProvider clientProvider = new ClientProvider();
+  Client client = new Client();
+  UserProvider userProvider = new UserProvider();
+
   TextEditingController _dateController = new TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of(context);
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(title: Text('Register')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(18.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _createNameInput(),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createLastNameInput(),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createBirthdayInput(context),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createGenderInput(),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createUsernameInput(),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createEmailInput(),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createPasswordInput(),
-            SizedBox(
-              height: 15.0,
-            ),
-            _createConfirmPasswordInput(),
-            SizedBox(
-              height: 30.0,
-            ),
-            _createRegisterButton()
-          ],
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _createNameInput(),
+              SizedBox(
+                height: 15.0,
+              ),
+              _createLastNameInput(),
+              SizedBox(
+                height: 15.0,
+              ),
+              _createBirthInput(context),
+              SizedBox(
+                height: 15.0,
+              ),
+              _createGenderInput(),
+              SizedBox(
+                height: 15.0,
+              ),
+              _createEmailInput(bloc),
+              SizedBox(
+                height: 15.0,
+              ),
+              _createPasswordInput(bloc),
+              SizedBox(
+                height: 15.0,
+              ),
+              _createConfirmPasswordInput(bloc),
+              SizedBox(
+                height: 30.0,
+              ),
+              _createRegisterButton(bloc)
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _createNameInput() {
-    return TextField(
+    return TextFormField(
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
           labelText: 'Name',
           icon: Icon(Icons.account_circle),
           suffixIcon: Icon(Icons.person_outline)),
-      onChanged: (name) {
-        setState(() {
-          _name = name;
-        });
-      },
+      onSaved: (value) => client.name = value,
     );
   }
 
   Widget _createLastNameInput() {
-    return TextField(
+    return TextFormField(
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
           labelText: 'Last Name',
           icon: Icon(Icons.account_circle),
           suffixIcon: Icon(Icons.person_outline)),
-      onChanged: (lastName) {
-        setState(() {
-          _lastName = lastName;
-        });
-      },
+      onSaved: (value) => client.lastName = value,
     );
   }
 
-  Widget _createBirthdayInput(BuildContext context) {
-    return TextField(
+  Widget _createBirthInput(BuildContext context) {
+    return TextFormField(
       enableInteractiveSelection: false,
       controller: _dateController,
       decoration: InputDecoration(
@@ -120,6 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (picked != null) {
       _birthday = picked.toString();
       _dateController.text = _birthday;
+      client.birth = picked;
     }
   }
 
@@ -138,6 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
             onChanged: (male) {
               setState(() {
                 _gender = male;
+                client.gender = true;
               });
             }),
         Text('Male'),
@@ -147,6 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
           onChanged: (male) {
             setState(() {
               _gender = !male;
+              client.gender = false;
             });
           },
         ),
@@ -155,69 +159,55 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _createUsernameInput() {
-    return TextField(
-      keyboardType: TextInputType.text,
-      decoration: InputDecoration(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-          labelText: 'Username',
-          icon: Icon(Icons.account_circle),
-          suffixIcon: Icon(Icons.person)),
-      onChanged: (username) {
-        setState(() {
-          _username = username;
-        });
+  Widget _createEmailInput(LoginBloc bloc) {
+    return StreamBuilder(
+      stream: bloc.emailStream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+              labelText: 'Email',
+              icon: Icon(Icons.email),
+              suffixIcon: Icon(Icons.alternate_email)),
+          onChanged: bloc.emailSink,
+        );
       },
     );
   }
 
-  Widget _createEmailInput() {
-    return TextField(
-      keyboardType: TextInputType.emailAddress,
-      decoration: InputDecoration(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-          labelText: 'Email',
-          icon: Icon(Icons.email),
-          suffixIcon: Icon(Icons.alternate_email)),
-      onChanged: (email) {
-        setState(() {
-          _email = email;
-        });
+  Widget _createPasswordInput(LoginBloc bloc) {
+    return StreamBuilder(
+      stream: bloc.passwordStream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return TextFormField(
+          obscureText: true,
+          decoration: InputDecoration(
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+              labelText: 'Password',
+              icon: Icon(Icons.lock),
+              suffixIcon: Icon(Icons.lock_outline),
+              errorText: snapshot.error),
+          onChanged: bloc.passwordSink,
+        );
       },
     );
   }
 
-  Widget _createPasswordInput() {
-    return TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-          labelText: 'Password',
-          icon: Icon(Icons.lock),
-          suffixIcon: Icon(Icons.lock_outline)),
-      onChanged: (password) {
-        setState(() {
-          _password = password;
-        });
-      },
-    );
-  }
-
-  Widget _createConfirmPasswordInput() {
-    return TextField(
+  Widget _createConfirmPasswordInput(LoginBloc bloc) {
+    return TextFormField(
       obscureText: true,
       decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
           labelText: 'Confirm Password',
           icon: Icon(Icons.lock),
           suffixIcon: Icon(Icons.lock_outline)),
-      onChanged: (confirmPassword) {
-        setState(() {});
-      },
     );
   }
 
-  Widget _createRegisterButton() {
+  Widget _createRegisterButton(LoginBloc bloc) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Row(
@@ -236,10 +226,31 @@ class _RegisterPageState extends State<RegisterPage> {
                   iconSize: 20.0,
                   padding: EdgeInsets.all(25.0),
                   onPressed: () {
-                    Navigator.pushNamed(context, 'medicalHistory');
+                    if (!formKey.currentState.validate()) return;
+                    formKey.currentState.save();
+                    _register(context, bloc);
                   }))
         ],
       ),
     );
+  }
+
+  _register(BuildContext context, LoginBloc bloc) async {
+    final result = await userProvider.createUser(bloc.email, bloc.password);
+    clientProvider.createClient(client);
+    if (result['ok']) {
+      Navigator.pushReplacementNamed(context, 'medicalHistory');
+    } else {
+      showMessage('Error');
+    }
+  }
+
+  void showMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: Duration(milliseconds: 1500),
+    );
+
+    scaffoldKey.currentState.showSnackBar(snackBar);
   }
 }

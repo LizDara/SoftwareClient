@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "pharmacyclient-287606",
+  "private_key_id": "2cb56b632e5e68da8a5a3307bdb9cd93af5c466d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCdvF/pF+9mgxj3\noTcEIyZ0ekhvQ/QIn/6nj7V4whlaho4lD+wheC4kQx31H5gFoJx7nlflo+HfGbNw\nSfgg73a5CZSnVoz+EzjCkDmqrvirNc8Bj+LrxBWDKKK+KKc4LWeYmTTEb0xdY9Vb\noqpxgsc0jMTJ9e/d6IprYcVQhjZpkPGEkiAwzgfotgZLZMBmxCQf6ROXx2nMzskB\nMjJevbOmPhz8N+5z73MZm/mRqrgbckywSCxH0QzcYs0r4eJ+4ZhSZyCTRapKctFO\neMu5xrFWANwXrhcYjrwXsef0/k27QbwmNKAvNrOrYIK5S2Q05Ali7aBeayU3lS8j\nUopU12yRAgMBAAECggEAE8pqkz2qTyekNo+u7jE11jfwhitVv05Jvn7Ys0vRMAtB\nYvOOOj3QtkKIi/SYl54o/BaoKxsmkB4ypiRVwlYhRIKn+N3yZz+Ep96+KYT2FM81\nx5mkzFWIKHJtBuRlZLZHsP0KApp/T5liz/JHJeJVeamu2DMoEyTl1ybHgbyxL4nq\nYqztSoWi5gAivM5AbfhNDVfYp54fimHz8mDwnD+FCtu1K4vjy1uq+S8FFZCJ3UFp\n4BcmK4FGWYjqnwMdCLYHew6DvEN4NCVE72odoyIFKU9aRMtNSNyBumS4udTp4Xu1\nU0yLzWl0xbxw7FhMuDImhS3CDtSo3iIDePIXGOMwNQKBgQDI9IcGB/MP0A/DbM8L\nTxNIS9xYBEPYJvie9uUSN5mCVHGdPb/jr3rwD69mjbISek5v2HQpgB+ULRDqLUHP\npsYAVjaBacwoUWu9OwSpyddKiu95uFEluB7i0qNh4TrWZi/Tb8BWN+PTsSyEn0jH\nhdN6kYR7GmnL1Mz1PYE5odqivQKBgQDI8TM92vZmX5XSwsiCZKMS5fpRSfAMJBTn\nHfUkyS9wMFyhBHZNtiSRNX7CZcOxFceOfxUYJ+tyIyJ3UKtboZF/J10sA+X6AMPc\nBdjMycTRXAX6s8867HT3oqz23vMZ27fO00Wf/v1wmbEGrXseXnsIxZZH/+sJPXUK\n/ThTXpmYZQKBgQCViinkWgwNK1ZfpdvY3YpK1XDt6paWBkIjATVrvgY1DyPQ0D+4\nbkA83l83IKBv0aYG4vtmWpqlSHf625zKqp9TZtR+rz0mj5huI7oPo0zbgtI8MOXp\n/L63Keo9Dz8ahsZ2QAXP4x1dzc2ED4g4OaUq45jDht9NuFig8pj0SzaIvQKBgAjW\nIoy7zk4eMfZ8vliNmGZCWsmsWLQP+iNXu+oMNtvWJJyoF5O/SMhh89sUopBtBsOL\nbyAK0V3JkcBxebej2UQgNQa0fS6LThGk6C3JSbBzPYgS1DAhKduh+b05fLNMaD7e\nJ5ernPWQrKpAgsOJIBv4pG0yIeHcJAOBszJnXJXJAoGBALXDg3Vb25Z6I4Gp+C59\nzO6Ufr3YJ/aZQtmEX2GoetzkFyNBQxOL1EgfvE/yVn91XdM4b5pALWgKEHSsSCSM\n4rt+E3zz70YpEz5/HeNyy5xAed7NzV6CzETIx13dG31ZVoLEnbMIwvEgSuhZM6H1\nwU3VNTQFq78QbDNVqVX5dhtj\n-----END PRIVATE KEY-----\n",
+  "client_email": "dialogflow-gqedxd@pharmacyclient-287606.iam.gserviceaccount.com",
+  "client_id": "114124466992168664982",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dialogflow-gqedxd%40pharmacyclient-287606.iam.gserviceaccount.com"
+}

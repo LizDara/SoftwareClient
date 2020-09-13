@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:software_client/src/models/information_model.dart';
+import 'package:software_client/src/providers/information_provider.dart';
 
 class MedicalHistoryPage extends StatefulWidget {
   @override
@@ -10,29 +12,35 @@ class _MedicalHistoryPageState extends State<MedicalHistoryPage> {
   String _typeSelected = 'O+';
   double _weight = 55.00; //Kg
   double _height = 1.60; //m
-  List<String> _allergy = List();
-  List<String> _baseDisease = new List();
-  bool _allergy1 = false;
+
+  InformationProvider informationProvider = new InformationProvider();
+  Information information = new Information();
+
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text('Medical History')),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(18.0),
-          child: Column(
-            children: <Widget>[
-              _createBloodTypeInput(),
-              SizedBox(height: 15.0),
-              _createWeightInput(),
-              SizedBox(height: 15.0),
-              _createHeightInput(),
-              SizedBox(height: 15.0),
-              _createAllergyInput(),
-              SizedBox(height: 15.0),
-              _createBaseDiseaseInput(),
-              SizedBox(height: 30.0),
-              _createSaveButton()
-            ],
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: <Widget>[
+                _createBloodTypeInput(),
+                SizedBox(height: 15.0),
+                _createWeightInput(),
+                SizedBox(height: 15.0),
+                _createHeightInput(),
+                SizedBox(height: 15.0),
+                _createAllergyInput(),
+                SizedBox(height: 15.0),
+                _createBaseDiseaseInput(),
+                SizedBox(height: 30.0),
+                _createSaveButton()
+              ],
+            ),
           ),
         ));
   }
@@ -48,6 +56,7 @@ class _MedicalHistoryPageState extends State<MedicalHistoryPage> {
           onChanged: (option) {
             setState(() {
               _typeSelected = option;
+              information.bloodType = option;
             });
           },
         ),
@@ -65,76 +74,47 @@ class _MedicalHistoryPageState extends State<MedicalHistoryPage> {
   }
 
   Widget _createWeightInput() {
-    return TextField(
+    return TextFormField(
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
           labelText: 'Weight',
           icon: Icon(Icons.person)),
-      onChanged: (weight) {
-        setState(() {
-          _weight = double.parse(weight);
-          print(_weight.toString());
-        });
-      },
+      onSaved: (value) => information.weight = double.parse(value),
     );
   }
 
   Widget _createHeightInput() {
-    return TextField(
+    return TextFormField(
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
           labelText: 'Height',
           icon: Icon(Icons.person)),
-      onChanged: (height) {
-        setState(() {
-          _height = double.parse(height);
-        });
-      },
+      onSaved: (value) => information.height = double.parse(value),
     );
   }
 
   Widget _createAllergyInput() {
-    _allergy.add('');
-    return Column(
-      children: <Widget>[
-        TextFormField(
-          decoration: InputDecoration(
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-              labelText: 'Allergy',
-              icon: Icon(Icons.scatter_plot),
-              suffixIcon: IconButton(
-                  icon: Icon(Icons.add),
-                  iconSize: 25.0,
-                  color: Colors.grey[600],
-                  onPressed: () {})),
-          onChanged: (allergy) {
-            _allergy[0] = allergy;
-            print(_allergy[0]);
-          },
-        ),
-      ],
+    return TextFormField(
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+          labelText: 'Allergy',
+          icon: Icon(Icons.scatter_plot)),
+      onSaved: (value) => information.allergy = value,
     );
   }
 
   Widget _createBaseDiseaseInput() {
-    _baseDisease.add('');
     return TextFormField(
-        decoration: InputDecoration(
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-            labelText: 'Base Disease',
-            icon: Icon(Icons.scatter_plot),
-            suffixIcon: IconButton(
-                icon: Icon(Icons.add),
-                iconSize: 25.0,
-                color: Colors.grey[600],
-                onPressed: () {})),
-        onChanged: (baseDisease) {
-          _baseDisease[0] = baseDisease;
-        });
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+          labelText: 'Disease',
+          icon: Icon(Icons.scatter_plot)),
+      onSaved: (value) => information.disease = value,
+    );
   }
 
   Widget _createSaveButton() {
@@ -156,10 +136,17 @@ class _MedicalHistoryPageState extends State<MedicalHistoryPage> {
                   iconSize: 20.0,
                   padding: EdgeInsets.all(25.0),
                   onPressed: () {
-                    Navigator.pushNamed(context, 'home');
+                    if (!formKey.currentState.validate()) return;
+                    formKey.currentState.save();
+                    _save(context);
                   }))
         ],
       ),
     );
+  }
+
+  _save(BuildContext context) {
+    informationProvider.createInformation(information);
+    Navigator.pushReplacementNamed(context, 'home');
   }
 }

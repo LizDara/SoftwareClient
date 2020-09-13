@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:software_client/src/blocs/provider.dart';
+import 'package:software_client/src/providers/user_provider.dart';
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+class LoginPage extends StatelessWidget {
+  final UserProvider userProvider = new UserProvider();
 
-class _LoginPageState extends State<LoginPage> {
-  String _email = '';
-  String _password = '';
+  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of(context);
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(title: Text('Login')),
       body: SingleChildScrollView(
         child: Container(
@@ -20,19 +21,19 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Divider(
-                height: 30.0,
+                height: 5.0,
               ),
               _createLogo(),
               Divider(
-                height: 20.0,
+                height: 5.0,
               ),
-              _createEmailInput(),
+              _createEmailInput(bloc),
               Divider(),
-              _createPasswordInput(),
+              _createPasswordInput(bloc),
+              Divider(height: 20.0),
+              _createSignInButton(bloc),
               Divider(height: 40.0),
-              _createSignInButton(),
-              Divider(height: 80.0),
-              _createSignUpButton()
+              _createSignUpButton(context)
             ],
           ),
         ),
@@ -42,63 +43,78 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _createLogo() {
     return FlutterLogo(
-      size: 280.0,
+      size: 200.0,
     );
   }
 
-  Widget _createEmailInput() {
-    return TextField(
-      keyboardType: TextInputType.emailAddress,
-      decoration: InputDecoration(
-          labelText: 'Email', suffixIcon: Icon(Icons.alternate_email)),
-      onChanged: (email) {
-        setState(() {
-          _email = email;
+  Widget _createEmailInput(LoginBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.emailStream,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return TextField(
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+                labelText: 'Email', suffixIcon: Icon(Icons.alternate_email)),
+            onChanged: bloc.emailSink,
+          );
         });
-      },
-    );
   }
 
-  Widget _createPasswordInput() {
-    return TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-          labelText: 'Password', suffixIcon: Icon(Icons.lock_outline)),
-      onChanged: (password) {
-        setState(() {
-          _password = password;
+  Widget _createPasswordInput(LoginBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.passwordStream,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return TextField(
+            obscureText: true,
+            decoration: InputDecoration(
+                labelText: 'Password', suffixIcon: Icon(Icons.lock_outline)),
+            onChanged: bloc.passwordSink,
+          );
         });
-      },
-    );
   }
 
-  Widget _createSignInButton() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.0),
-      child: Row(
-        children: <Widget>[
-          Text(
-            'Sign in',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-          ),
-          Expanded(child: SizedBox()),
-          Ink(
-              decoration: const ShapeDecoration(
-                  color: Colors.blue, shape: CircleBorder()),
-              child: IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  color: Colors.white,
-                  iconSize: 20.0,
-                  padding: EdgeInsets.all(25.0),
-                  onPressed: () {
-                    Navigator.pushNamed(context, 'home');
-                  }))
-        ],
-      ),
-    );
+  Widget _createSignInButton(LoginBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.formValidStream,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  'Sign in',
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+                Expanded(child: SizedBox()),
+                Ink(
+                    decoration: const ShapeDecoration(
+                        color: Colors.blue, shape: CircleBorder()),
+                    child: IconButton(
+                        icon: Icon(Icons.arrow_forward),
+                        color: Colors.white,
+                        iconSize: 20.0,
+                        padding: EdgeInsets.all(25.0),
+                        onPressed: snapshot.hasData
+                            ? () {
+                                _login(context, bloc);
+                              }
+                            : null))
+              ],
+            ),
+          );
+        });
   }
 
-  Widget _createSignUpButton() {
+  _login(BuildContext context, LoginBloc bloc) async {
+    Map result = await userProvider.login(bloc.email, bloc.password);
+    if (result['ok']) {
+      Navigator.pushReplacementNamed(context, 'home');
+    } else {
+      showMessage('Email or password incorrect');
+    }
+  }
+
+  Widget _createSignUpButton(BuildContext context) {
     return Row(
       children: <Widget>[
         FlatButton(
@@ -118,5 +134,14 @@ class _LoginPageState extends State<LoginPage> {
             })
       ],
     );
+  }
+
+  void showMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: Duration(milliseconds: 1500),
+    );
+
+    scaffoldKey.currentState.showSnackBar(snackBar);
   }
 }
